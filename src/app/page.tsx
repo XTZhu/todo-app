@@ -10,10 +10,11 @@ import type { FilterStatus, FilterCategory, SortBy } from '@/types/todo'
 import TodoForm from '@/components/todo-form'
 import TodoFilter from '@/components/todo-filter'
 import SortableTodoItem from '@/components/sortable-todo-item'
+import HCaptchaAuth from '@/components/hcaptcha-auth'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function Home() {
-  const { todos, hydrated, syncing, error, clearError, addTodo, updateTodo, deleteTodo, toggleStatus, reorderTodos } = useTodos()
+  const { todos, hydrated, syncing, error, clearError, needsCaptcha, onCaptchaVerified, addTodo, updateTodo, deleteTodo, toggleStatus, reorderTodos } = useTodos()
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [filterCategory, setFilterCategory] = useState<FilterCategory>('all')
   const [sortBy, setSortBy] = useState<SortBy>('createdAt')
@@ -72,6 +73,13 @@ export default function Home() {
           <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" title="同步中..." />
         )}
       </div>
+
+      {needsCaptcha && (
+        <HCaptchaAuth
+          siteKey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ''}
+          onVerify={onCaptchaVerified}
+        />
+      )}
 
       <TodoForm onAdd={addTodo} />
 

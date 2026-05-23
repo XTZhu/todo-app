@@ -1,7 +1,7 @@
-import type { User } from '@supabase/supabase-js'
+import type { User, SupabaseClient } from '@supabase/supabase-js'
 import { setSupabaseClient } from './supabase-api'
 
-let clientInitialized = false
+let _clientPromise: Promise<SupabaseClient> | null = null
 
 function getConfig() {
   if (typeof window === 'undefined') return { url: '', key: '' }
@@ -16,14 +16,12 @@ export function isCloudEnabled(): boolean {
   return !!(url && key)
 }
 
-export async function getOrCreateAnonymousUser(): Promise<User | null> {
-  if (!isCloudEnabled()) return null
-  if (clientInitialized) return null // Already tried, don't re-init
-
+async function ensureClient() {
+  if (_clientPromise) return _clientPromise
   const { url, key } = getConfig()
-  if (!url || !key) return null
+  if (!url || !key) throw new Error('Supabase not configured')
 
-  try {
+  _clientPromise = (async () => {
     const { createClient } = await import('@supabase/supabase-js')
     const client = createClient(url, key, {
       auth: {
@@ -33,21 +31,41 @@ export async function getOrCreateAnonymousUser(): Promise<User | null> {
       },
     })
     setSupabaseClient(client)
-    clientInitialized = true
+    return client
+  })()
+  return _clientPromise
+}
+
+export async function getOrCreateAnonymousUser(captchaToken?: string): Promise<User | null> {
+  if (!isCloudEnabled()) return null
+
+  try {
+    const client = await ensureClient()
 
     const { data: { session } } = await client.auth.getSession()
     if (session?.user) return session.user
 
-    const { data, error } = await client.auth.signInAnonymously()
+    const { data, error } = await client.auth.signInAnonymously({
+      options: { captchaToken },
+    })
     if (error) {
       console.error('Anonymous sign-in failed:', error.message)
-      setSupabaseClient(null)
       return null
     }
     return data.user
   } catch (err) {
     console.error('Supabase init failed:', err)
-    setSupabaseClient(null)
     return null
+  }
+}
+
+export async function hasExistingSession(): Promise<boolean> {
+  if (!isCloudEnabled()) return false
+  try {
+    const client = await ensureClient()
+    const { data: { session } } = await client.auth.getSession()
+    return !!session?.user
+  } catch {
+    return false
   }
 }

@@ -39,11 +39,28 @@ export function useTodos() {
   const [hydrated, setHydrated] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [needsCaptcha, setNeedsCaptcha] = useState(false)
   const userIdRef = useRef<string | null>(null)
   const cloudEnabledRef = useRef(false)
   const offlineQueueRef = useRef<Array<() => Promise<void>>>([])
 
   const clearError = useCallback(() => setError(null), [])
+
+  const onCaptchaVerified = useCallback(async (token: string) => {
+    setNeedsCaptcha(false)
+    try {
+      const user = await getOrCreateAnonymousUser(token)
+      if (user) {
+        userIdRef.current = user.id
+        cloudEnabledRef.current = true
+        const remote = await fetchTodos(user.id)
+        setTodos(remote)
+        saveToLocalStorage(remote)
+      }
+    } catch (err) {
+      console.error('Captcha auth failed:', err)
+    }
+  }, [])
 
   // Initialize: try cloud, fallback to localStorage
   useEffect(() => {
@@ -66,11 +83,10 @@ export function useTodos() {
           const remote = await fetchTodos(user.id)
           if (cancelled) return
           setTodos(remote)
-          // Sync local to cloud
           saveToLocalStorage(remote)
         } else {
-          // No Supabase config — use localStorage
           setTodos(loadFromLocalStorage())
+          setNeedsCaptcha(true)
         }
       } catch (err) {
         console.error('Failed to load from cloud, using local:', err)
@@ -242,7 +258,7 @@ export function useTodos() {
     })
   }, [])
 
-  return { todos, hydrated, syncing, error, clearError, addTodo, updateTodo, deleteTodo, toggleStatus, reorderTodos }
+  return { todos, hydrated, syncing, error, clearError, needsCaptcha, onCaptchaVerified, addTodo, updateTodo, deleteTodo, toggleStatus, reorderTodos }
 }
 
 export function useFilteredTodos(
