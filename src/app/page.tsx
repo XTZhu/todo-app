@@ -13,6 +13,15 @@ import SortableTodoItem from '@/components/sortable-todo-item'
 import HCaptchaAuth from '@/components/hcaptcha-auth'
 import { Skeleton } from '@/components/ui/skeleton'
 
+const features = [
+  { icon: '☁', label: '匿名云同步' },
+  { icon: '⚡', label: '离线优先' },
+  { icon: '↻', label: '三态切换' },
+  { icon: '⠿', label: '拖拽排序' },
+  { icon: '✎', label: '行内编辑' },
+  { icon: '⌨', label: '键盘操作' },
+]
+
 export default function Home() {
   const { todos, hydrated, syncing, error, clearError, needsCaptcha, onCaptchaVerified, addTodo, updateTodo, deleteTodo, toggleStatus, reorderTodos } = useTodos()
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
@@ -47,9 +56,15 @@ export default function Home() {
   if (!hydrated) {
     return (
       <main className="mx-auto max-w-2xl p-4">
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-6 flex items-center gap-3">
+          <Skeleton className="h-8 w-8 rounded" />
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-4 w-4 rounded-full" />
+        </div>
+        <div className="mb-4 flex gap-2">
+          <Skeleton className="h-5 w-20 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
         </div>
         <Skeleton className="h-32 w-full rounded-lg" />
         <div className="mt-4"><Skeleton className="h-9 w-64" /></div>
@@ -67,12 +82,35 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-2xl p-4">
       <Toaster richColors position="bottom-right" />
-      <div className="mb-4 flex items-center gap-2">
-        <h1 className="text-2xl font-bold text-foreground">任务管理</h1>
-        {syncing && (
-          <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" title="同步中..." />
-        )}
-      </div>
+
+      {/* Hero / Feature Intro */}
+      <header className="mb-6 rounded-lg border border-border bg-card p-5 shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-accent/20 text-lg">
+            ♤
+          </span>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">TODO 应用</h1>
+            <p className="text-xs text-muted-foreground">
+              简约优雅 · 离线优先 · 匿名云同步
+            </p>
+          </div>
+          {syncing && (
+            <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" title="同步中..." />
+          )}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {features.map((f) => (
+            <span
+              key={f.label}
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
+            >
+              <span aria-hidden>{f.icon}</span>
+              {f.label}
+            </span>
+          ))}
+        </div>
+      </header>
 
       {needsCaptcha && (
         <HCaptchaAuth

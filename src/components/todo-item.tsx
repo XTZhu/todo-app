@@ -103,12 +103,15 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
               'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-all cursor-pointer',
               todo.status === 'done'
                 ? 'border-emerald-500 bg-emerald-500 text-white'
-                : 'border-muted-foreground/30 hover:border-primary'
+                : todo.status === 'in-progress'
+                  ? 'border-amber-500 bg-amber-500 text-white'
+                  : 'border-muted-foreground/30 hover:border-primary'
             )}
             aria-label={todo.status === 'done' ? '标记未完成' : '标记完成'}
             data-testid="todo-toggle"
           >
             {todo.status === 'done' && <span className="text-xs">✓</span>}
+            {todo.status === 'in-progress' && <span className="text-xs">—</span>}
           </button>
 
           <div className="min-w-0 flex-1">
@@ -122,7 +125,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
                   onBlur={commitEdit}
-                  className="w-full rounded border border-primary bg-background px-1 py-0.5 text-sm font-medium text-foreground outline-none"
+                  className="min-w-0 flex-1 rounded border border-primary bg-background px-1 py-0.5 text-sm font-medium text-foreground outline-none"
                   data-testid="todo-edit-input"
                 />
               ) : (
