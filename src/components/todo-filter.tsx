@@ -11,6 +11,9 @@ interface Props {
   onSortByChange: (s: SortBy) => void
 }
 
+const selectClass =
+  "warm-select h-8 rounded-lg border border-input bg-background px-2.5 py-0.5 text-xs text-muted-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 cursor-pointer"
+
 export default function TodoFilter({
   filterStatus,
   filterCategory,
@@ -20,11 +23,11 @@ export default function TodoFilter({
   onSortByChange,
 }: Props) {
   return (
-    <div className="flex flex-wrap gap-2" data-testid="todo-filter">
+    <div className="flex flex-wrap items-center gap-2" data-testid="todo-filter">
       <select
         value={filterStatus}
         onChange={(e) => onFilterStatusChange(e.target.value as FilterStatus)}
-        className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+        className={selectClass}
         aria-label="按状态筛选"
         data-testid="filter-status"
       >
@@ -37,7 +40,7 @@ export default function TodoFilter({
       <select
         value={filterCategory}
         onChange={(e) => onFilterCategoryChange(e.target.value as FilterCategory)}
-        className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+        className={selectClass}
         aria-label="按分类筛选"
         data-testid="filter-category"
       >
@@ -50,13 +53,13 @@ export default function TodoFilter({
       <select
         value={sortBy}
         onChange={(e) => onSortByChange(e.target.value as SortBy)}
-        className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+        className={selectClass}
         aria-label="排序方式"
         data-testid="sort-by"
       >
-        <option value="createdAt">按创建时间</option>
-        <option value="priority">按优先级</option>
-        <option value="dueDate">按截止日期</option>
+        <option value="createdAt">创建时间</option>
+        <option value="priority">优先级</option>
+        <option value="dueDate">截止日期</option>
       </select>
     </div>
   )

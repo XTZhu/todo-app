@@ -12,10 +12,10 @@ export default function HCaptchaAuth({ siteKey, onVerify }: HCaptchaAuthProps) {
   const captchaRef = useRef<HCaptcha>(null)
 
   return (
-    <div className="flex items-center justify-center py-12">
-      <div className="rounded-lg border border-border bg-card p-6 text-center shadow-sm">
+    <div className="mb-6 flex justify-center">
+      <div className="rounded-xl bg-card p-6 text-center shadow-[var(--shadow-card)]">
         <p className="mb-4 text-sm text-muted-foreground">
-          请完成人机验证以继续使用云同步功能
+          请完成验证以启用云同步
         </p>
         <HCaptcha
           ref={captchaRef}

@@ -16,8 +16,8 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
-  title: "TODO 应用",
-  description: "全栈基础层 TODO 任务管理应用",
+  title: "TODO",
+  description: "简约优雅的任务管理应用",
 };
 
 export default function RootLayout({
@@ -30,7 +30,9 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${lora.variable} ${notoSerifSC.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-gradient-to-b from-transparent via-transparent to-muted/30">
+        {children}
+      </body>
     </html>
   );
 }

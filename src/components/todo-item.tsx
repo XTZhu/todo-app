@@ -80,8 +80,8 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
   return (
     <Card
       className={cn(
-        'transition-all duration-200 animate-fade-up',
-        todo.status === 'done' && 'opacity-60'
+        'group transition-all duration-200 animate-fade-up',
+        todo.status === 'done' && 'opacity-50'
       )}
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -89,35 +89,42 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
     >
       <CardContent className="p-3">
         <div className="flex items-start gap-3">
+          {/* Drag handle — visible on hover */}
           <span
-            className="mt-0.5 shrink-0 cursor-grab text-muted-foreground/40 hover:text-muted-foreground select-none"
+            className="mt-0.5 shrink-0 cursor-grab text-muted-foreground/25 group-hover:text-muted-foreground/50 transition-colors select-none"
             data-testid="drag-handle"
             aria-hidden
           >
             ⠿
           </span>
 
+          {/* Status toggle */}
           <button
             onClick={() => onToggle(todo.id)}
             className={cn(
-              'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-all cursor-pointer',
+              'mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 cursor-pointer',
               todo.status === 'done'
-                ? 'border-emerald-500 bg-emerald-500 text-white'
+                ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-600'
                 : todo.status === 'in-progress'
-                  ? 'border-amber-500 bg-amber-500 text-white'
-                  : 'border-muted-foreground/30 hover:border-primary'
+                  ? 'border-amber-500/60 bg-amber-500/10 text-amber-600'
+                  : 'border-muted-foreground/25 hover:border-accent/60'
             )}
             aria-label={todo.status === 'done' ? '标记未完成' : '标记完成'}
             data-testid="todo-toggle"
           >
-            {todo.status === 'done' && <span className="text-xs">✓</span>}
-            {todo.status === 'in-progress' && <span className="text-xs">—</span>}
+            {todo.status === 'done' && <span className="text-[10px] leading-none">✓</span>}
+            {todo.status === 'in-progress' && <span className="text-[10px] leading-none font-bold">—</span>}
           </button>
 
+          {/* Content */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <Badge variant={priorityBadgeVariant[todo.priority]}>{priorityLabels[todo.priority]}</Badge>
-              <Badge variant="outline">{categoryLabels[todo.category]}</Badge>
+              <Badge variant={priorityBadgeVariant[todo.priority]} className="shrink-0">
+                {priorityLabels[todo.priority]}
+              </Badge>
+              <Badge variant="outline" className="shrink-0">
+                {categoryLabels[todo.category]}
+              </Badge>
               {editing ? (
                 <input
                   ref={inputRef}
@@ -125,14 +132,15 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
                   onBlur={commitEdit}
-                  className="min-w-0 flex-1 rounded border border-primary bg-background px-1 py-0.5 text-sm font-medium text-foreground outline-none"
+                  className="min-w-0 flex-1 rounded-md border-0 bg-secondary/50 px-1.5 py-0.5 text-sm font-medium text-foreground outline-none ring-1 ring-inset ring-accent/40"
                   data-testid="todo-edit-input"
                 />
               ) : (
                 <h3
                   className={cn(
-                    'truncate text-sm font-medium cursor-pointer hover:text-primary transition-colors',
-                    todo.status === 'done' && 'line-through text-muted-foreground'
+                    'truncate text-sm font-medium cursor-pointer transition-colors duration-150',
+                    'hover:text-accent',
+                    todo.status === 'done' && 'line-through text-muted-foreground/60'
                   )}
                   onDoubleClick={startEditing}
                   data-testid="todo-title"
@@ -143,10 +151,17 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
               )}
             </div>
             {todo.description && (
-              <p className="mt-1 text-xs text-muted-foreground">{todo.description}</p>
+              <p className="mt-1 text-xs text-muted-foreground/80 leading-relaxed">
+                {todo.description}
+              </p>
             )}
-            <div className="mt-1 flex flex-wrap gap-1 text-xs text-muted-foreground/70">
-              <span>{statusLabels[todo.status]}</span>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground/60">
+              <span className={cn(
+                todo.status === 'done' && 'text-emerald-600/70',
+                todo.status === 'in-progress' && 'text-amber-600/70'
+              )}>
+                {statusLabels[todo.status]}
+              </span>
               {todo.dueDate && (
                 <span data-testid="todo-due-date">
                   截止: {new Date(todo.dueDate).toLocaleDateString('zh-CN')}
@@ -155,13 +170,14 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
             </div>
           </div>
 
+          {/* Delete */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onDelete(todo.id)}
             aria-label="删除任务"
             data-testid="todo-delete"
-            className="text-muted-foreground/50 hover:text-destructive shrink-0"
+            className="h-7 w-7 shrink-0 text-muted-foreground/30 hover:text-destructive/70 opacity-0 group-hover:opacity-100 transition-all duration-150"
           >
             ✕
           </Button>

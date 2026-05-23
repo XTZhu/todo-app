@@ -39,18 +39,21 @@ export default function TodoForm({ onAdd }: Props) {
     [handleSubmit]
   )
 
+  const selectClass =
+    "warm-select h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm text-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 cursor-pointer"
+
   return (
     <form
       onSubmit={handleSubmit}
       onKeyDown={handleKeyDown}
-      className="rounded-lg border border-border bg-card p-4 shadow-sm"
+      className="rounded-xl bg-card p-4 shadow-[var(--shadow-card)]"
       data-testid="todo-form"
     >
       <Input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="输入任务标题... (Ctrl+Enter 添加)"
+        placeholder="新任务标题...  (Ctrl+Enter 添加)"
         data-testid="todo-input"
         autoFocus
       />
@@ -58,7 +61,7 @@ export default function TodoForm({ onAdd }: Props) {
         type="text"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="任务描述（可选）"
+        placeholder="描述（可选）"
         className="mt-2"
         data-testid="todo-description-input"
       />
@@ -66,7 +69,7 @@ export default function TodoForm({ onAdd }: Props) {
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value as Priority)}
-          className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+          className={selectClass}
           data-testid="priority-select"
           aria-label="优先级"
         >
@@ -77,7 +80,7 @@ export default function TodoForm({ onAdd }: Props) {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value as Category)}
-          className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+          className={selectClass}
           data-testid="category-select"
           aria-label="分类"
         >
@@ -89,12 +92,12 @@ export default function TodoForm({ onAdd }: Props) {
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={selectClass}
           data-testid="due-date-input"
           aria-label="截止日期"
         />
         <Button type="submit" disabled={!title.trim()} data-testid="add-button" size="sm">
-          添加任务
+          添加
         </Button>
       </div>
     </form>

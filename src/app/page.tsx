@@ -13,14 +13,7 @@ import SortableTodoItem from '@/components/sortable-todo-item'
 import HCaptchaAuth from '@/components/hcaptcha-auth'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const features = [
-  { icon: '☁', label: '匿名云同步' },
-  { icon: '⚡', label: '离线优先' },
-  { icon: '↻', label: '三态切换' },
-  { icon: '⠿', label: '拖拽排序' },
-  { icon: '✎', label: '行内编辑' },
-  { icon: '⌨', label: '键盘操作' },
-]
+const features = ['匿名云同步', '离线优先', '三态切换', '拖拽排序', '行内编辑', '键盘操作']
 
 export default function Home() {
   const { todos, hydrated, syncing, error, clearError, needsCaptcha, onCaptchaVerified, addTodo, updateTodo, deleteTodo, toggleStatus, reorderTodos } = useTodos()
@@ -55,23 +48,22 @@ export default function Home() {
 
   if (!hydrated) {
     return (
-      <main className="mx-auto max-w-2xl p-4">
-        <div className="mb-6 flex items-center gap-3">
-          <Skeleton className="h-8 w-8 rounded" />
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-4 rounded-full" />
+      <main className="mx-auto max-w-xl px-4 py-8">
+        <div className="mb-8 space-y-3">
+          <Skeleton className="h-7 w-36" />
+          <Skeleton className="h-4 w-56" />
+          <div className="mt-4 flex gap-2">
+            <Skeleton className="h-5 w-16 rounded-md" />
+            <Skeleton className="h-5 w-16 rounded-md" />
+            <Skeleton className="h-5 w-16 rounded-md" />
+          </div>
         </div>
-        <div className="mb-4 flex gap-2">
-          <Skeleton className="h-5 w-20 rounded-full" />
-          <Skeleton className="h-5 w-20 rounded-full" />
-          <Skeleton className="h-5 w-20 rounded-full" />
-        </div>
-        <Skeleton className="h-32 w-full rounded-lg" />
-        <div className="mt-4"><Skeleton className="h-9 w-64" /></div>
+        <Skeleton className="h-28 w-full rounded-xl" />
+        <div className="mt-4"><Skeleton className="h-8 w-56" /></div>
         <div className="mt-3 space-y-2">
-          <Skeleton className="h-20 w-full rounded-lg" />
-          <Skeleton className="h-20 w-full rounded-lg" />
-          <Skeleton className="h-20 w-full rounded-lg" />
+          <Skeleton className="h-[72px] w-full rounded-xl" />
+          <Skeleton className="h-[72px] w-full rounded-xl" />
+          <Skeleton className="h-[72px] w-full rounded-xl" />
         </div>
       </main>
     )
@@ -80,33 +72,29 @@ export default function Home() {
   const filteredIds = filtered.map((t) => t.id)
 
   return (
-    <main className="mx-auto max-w-2xl p-4">
+    <main className="mx-auto max-w-xl px-4 py-8">
       <Toaster richColors position="bottom-right" />
 
-      {/* Hero / Feature Intro */}
-      <header className="mb-6 rounded-lg border border-border bg-card p-5 shadow-sm">
+      {/* Header */}
+      <header className="mb-8">
         <div className="flex items-center gap-3">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-accent/20 text-lg">
-            ♤
-          </span>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">TODO 应用</h1>
-            <p className="text-xs text-muted-foreground">
-              简约优雅 · 离线优先 · 匿名云同步
-            </p>
-          </div>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            TODO
+          </h1>
           {syncing && (
-            <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" title="同步中..." />
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" title="同步中..." />
           )}
         </div>
+        <p className="mt-1 text-sm text-muted-foreground/70">
+          简约优雅 · 离线优先 · 匿名云同步
+        </p>
         <div className="mt-3 flex flex-wrap gap-1.5">
           {features.map((f) => (
             <span
-              key={f.label}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
+              key={f}
+              className="inline-flex rounded-md bg-muted px-2 py-0.5 text-[11px] text-muted-foreground/70"
             >
-              <span aria-hidden>{f.icon}</span>
-              {f.label}
+              {f}
             </span>
           ))}
         </div>
@@ -121,7 +109,7 @@ export default function Home() {
 
       <TodoForm onAdd={addTodo} />
 
-      <div className="mt-4">
+      <div className="mt-5">
         <TodoFilter
           filterStatus={filterStatus}
           filterCategory={filterCategory}
@@ -132,16 +120,18 @@ export default function Home() {
         />
       </div>
 
-      <p className="mt-2 text-xs text-muted-foreground">
-        共 {filtered.length} 个任务
-        {filtered.length !== todos.length && ` (筛选自 ${todos.length} 个)`}
+      <p className="mt-3 text-[11px] text-muted-foreground/50">
+        {filtered.length} 个任务
+        {filtered.length !== todos.length && ` / 共 ${todos.length} 个`}
       </p>
 
       <div className="mt-3 space-y-2" data-testid="todo-list">
         {filtered.length === 0 ? (
-          <p className="py-12 text-center text-sm text-muted-foreground">
-            {todos.length === 0 ? '暂无任务，快去添加一个吧！' : '没有匹配的任务'}
-          </p>
+          <div className="py-16 text-center">
+            <p className="text-sm text-muted-foreground/50">
+              {todos.length === 0 ? '还没有任务，添加一个吧' : '没有匹配的任务'}
+            </p>
+          </div>
         ) : (
           <DndContext
             sensors={sensors}
@@ -151,7 +141,7 @@ export default function Home() {
           >
             <SortableContext items={filteredIds} strategy={verticalListSortingStrategy}>
               {filtered.map((todo, index) => (
-                <div key={todo.id} style={{ animationDelay: `${index * 40}ms` }}>
+                <div key={todo.id} style={{ animationDelay: `${index * 50}ms` }}>
                   <SortableTodoItem
                     todo={todo}
                     onToggle={toggleStatus}
