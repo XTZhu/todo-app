@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lora, Noto_Serif_SC } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lora = Lora({
   subsets: ["latin"],
+  variable: "--font-lora",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const notoSerifSC = Noto_Serif_SC({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-noto-serif-sc",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${lora.variable} ${notoSerifSC.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -2,10 +2,20 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { Todo } from '@/types/todo'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
-const priorityLabels = { high: '🔴', medium: '🟡', low: '🟢' }
-const statusLabels: Record<string, string> = { todo: '未开始', 'in-progress': '进行中', done: '✅ 已完成' }
-const categoryLabels: Record<string, string> = { personal: '👤', work: '💼', learning: '📚' }
+const priorityLabels = { high: '高', medium: '中', low: '低' }
+const statusLabels: Record<string, string> = { todo: '未开始', 'in-progress': '进行中', done: '已完成' }
+const categoryLabels: Record<string, string> = { personal: '个人', work: '工作', learning: '学习' }
+
+const priorityBadgeVariant: Record<string, 'priority_high' | 'priority_medium' | 'priority_low'> = {
+  high: 'priority_high',
+  medium: 'priority_medium',
+  low: 'priority_low',
+}
 
 interface Props {
   todo: Todo
@@ -68,87 +78,92 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: Props) 
   )
 
   return (
-    <div
-      className={`rounded-lg border p-3 shadow-sm transition-colors focus-within:ring-2 focus-within:ring-blue-500 ${
-        todo.status === 'done'
-          ? 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50'
-          : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'
-      }`}
+    <Card
+      className={cn(
+        'transition-all duration-200 animate-fade-up',
+        todo.status === 'done' && 'opacity-60'
+      )}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       data-testid={`todo-item-${todo.id}`}
     >
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 shrink-0 cursor-grab text-gray-300 hover:text-gray-500 dark:text-gray-600" data-testid="drag-handle" aria-hidden>
-          ⠿
-        </span>
+      <CardContent className="p-3">
+        <div className="flex items-start gap-3">
+          <span
+            className="mt-0.5 shrink-0 cursor-grab text-muted-foreground/40 hover:text-muted-foreground select-none"
+            data-testid="drag-handle"
+            aria-hidden
+          >
+            ⠿
+          </span>
 
-        <button
-          onClick={() => onToggle(todo.id)}
-          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
-            todo.status === 'done'
-              ? 'border-green-500 bg-green-500 text-white'
-              : 'border-gray-300 hover:border-blue-400 dark:border-gray-600'
-          }`}
-          aria-label={todo.status === 'done' ? '标记未完成' : '标记完成'}
-          data-testid="todo-toggle"
-        >
-          {todo.status === 'done' && <span className="text-xs">✓</span>}
-        </button>
+          <button
+            onClick={() => onToggle(todo.id)}
+            className={cn(
+              'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-all cursor-pointer',
+              todo.status === 'done'
+                ? 'border-emerald-500 bg-emerald-500 text-white'
+                : 'border-muted-foreground/30 hover:border-primary'
+            )}
+            aria-label={todo.status === 'done' ? '标记未完成' : '标记完成'}
+            data-testid="todo-toggle"
+          >
+            {todo.status === 'done' && <span className="text-xs">✓</span>}
+          </button>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs" title={todo.priority}>
-              {priorityLabels[todo.priority]}
-            </span>
-            <span className="text-xs" title={todo.category}>
-              {categoryLabels[todo.category]}
-            </span>
-            {editing ? (
-              <input
-                ref={inputRef}
-                type="text"
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                onBlur={commitEdit}
-                className="w-full rounded border border-blue-400 px-1 py-0.5 text-sm font-medium text-gray-900 outline-none dark:bg-gray-700 dark:text-white"
-                data-testid="todo-edit-input"
-              />
-            ) : (
-              <h3
-                className={`truncate text-sm font-medium cursor-pointer hover:text-blue-500 ${
-                  todo.status === 'done' ? 'text-gray-400 line-through dark:text-gray-500' : 'text-gray-900 dark:text-white'
-                }`}
-                onDoubleClick={startEditing}
-                data-testid="todo-title"
-                title="双击编辑"
-              >
-                {todo.title}
-              </h3>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <Badge variant={priorityBadgeVariant[todo.priority]}>{priorityLabels[todo.priority]}</Badge>
+              <Badge variant="outline">{categoryLabels[todo.category]}</Badge>
+              {editing ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  onBlur={commitEdit}
+                  className="w-full rounded border border-primary bg-background px-1 py-0.5 text-sm font-medium text-foreground outline-none"
+                  data-testid="todo-edit-input"
+                />
+              ) : (
+                <h3
+                  className={cn(
+                    'truncate text-sm font-medium cursor-pointer hover:text-primary transition-colors',
+                    todo.status === 'done' && 'line-through text-muted-foreground'
+                  )}
+                  onDoubleClick={startEditing}
+                  data-testid="todo-title"
+                  title="双击编辑"
+                >
+                  {todo.title}
+                </h3>
+              )}
+            </div>
+            {todo.description && (
+              <p className="mt-1 text-xs text-muted-foreground">{todo.description}</p>
             )}
+            <div className="mt-1 flex flex-wrap gap-1 text-xs text-muted-foreground/70">
+              <span>{statusLabels[todo.status]}</span>
+              {todo.dueDate && (
+                <span data-testid="todo-due-date">
+                  截止: {new Date(todo.dueDate).toLocaleDateString('zh-CN')}
+                </span>
+              )}
+            </div>
           </div>
-          {todo.description && (
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{todo.description}</p>
-          )}
-          <div className="mt-1 flex flex-wrap gap-1 text-xs text-gray-400 dark:text-gray-500">
-            <span>{statusLabels[todo.status]}</span>
-            {todo.dueDate && (
-              <span data-testid="todo-due-date">
-                截止: {new Date(todo.dueDate).toLocaleDateString('zh-CN')}
-              </span>
-            )}
-          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(todo.id)}
+            aria-label="删除任务"
+            data-testid="todo-delete"
+            className="text-muted-foreground/50 hover:text-destructive shrink-0"
+          >
+            ✕
+          </Button>
         </div>
-
-        <button
-          onClick={() => onDelete(todo.id)}
-          className="shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
-          aria-label="删除任务"
-          data-testid="todo-delete"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

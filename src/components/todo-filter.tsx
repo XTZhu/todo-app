@@ -24,7 +24,7 @@ export default function TodoFilter({
       <select
         value={filterStatus}
         onChange={(e) => onFilterStatusChange(e.target.value as FilterStatus)}
-        className="rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
         aria-label="按状态筛选"
         data-testid="filter-status"
       >
@@ -37,7 +37,7 @@ export default function TodoFilter({
       <select
         value={filterCategory}
         onChange={(e) => onFilterCategoryChange(e.target.value as FilterCategory)}
-        className="rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
         aria-label="按分类筛选"
         data-testid="filter-category"
       >
@@ -50,7 +50,7 @@ export default function TodoFilter({
       <select
         value={sortBy}
         onChange={(e) => onSortByChange(e.target.value as SortBy)}
-        className="rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        className="warm-select h-9 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
         aria-label="排序方式"
         data-testid="sort-by"
       >
