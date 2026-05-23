@@ -19,6 +19,21 @@ function dbToTodo(row: Record<string, unknown>): Todo {
   }
 }
 
+function todoToRow(todo: Todo, userId: string, index: number) {
+  return {
+    id: todo.id,
+    user_id: userId,
+    title: todo.title,
+    description: todo.description,
+    priority: todo.priority,
+    status: todo.status,
+    category: todo.category,
+    due_date: todo.dueDate,
+    created_at: todo.createdAt,
+    sort_order: index,
+  }
+}
+
 export async function fetchTodos(userId: string): Promise<Todo[]> {
   const client = getClient()
   if (!client) throw new Error('Supabase not configured')
@@ -91,17 +106,13 @@ export async function deleteTodoFromDb(userId: string, id: string): Promise<void
   if (error) throw error
 }
 
-export async function reorderTodosInDb(userId: string, orderedIds: string[]): Promise<void> {
+export async function reorderTodosInDb(userId: string, todos: Todo[]): Promise<void> {
   const client = getClient()
   if (!client) throw new Error('Supabase not configured')
 
-  const updates = orderedIds.map((id, index) => ({
-    id,
-    user_id: userId,
-    sort_order: index,
-  }))
+  const rows = todos.map((todo, index) => todoToRow(todo, userId, index))
 
-  const { error } = await client.from('tasks').upsert(updates, {
+  const { error } = await client.from('tasks').upsert(rows, {
     onConflict: 'id',
     ignoreDuplicates: false,
   })

@@ -252,8 +252,7 @@ export function useTodos() {
     if (!userId || !cloudEnabledRef.current || !isOnline()) return
 
     setTodos((current) => {
-      const orderedIds = current.map((t) => t.id)
-      reorderTodosInDb(userId, orderedIds).catch(() => {})
+      reorderTodosInDb(userId, current).catch(() => {})
       return current
     })
   }, [])
